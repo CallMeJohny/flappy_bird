@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 from sys import exit
 import random
+import os
 
 WIDTH = 800
 HEIGHT = 600
@@ -15,6 +16,8 @@ TOWER_COLOR = (100, 100, 100)
 TOWER_WIDTH = 50
 TOWER_GAP = 300
 
+dirname = os.path.dirname(__file__)
+
 def main():
     pygame.init()
     
@@ -24,20 +27,21 @@ def main():
     DISPLAY_SURFACE = pygame.display.set_mode((WIDTH, HEIGHT))
     FPS_CLOCK = pygame.time.Clock()
     BASICFONT = pygame.font.Font('freesansbold.ttf', 20)
-    title_screen()
+    
+    bg = pygame.image.load(os.path.join("images/city-bg.png"))
+    cloud_image = pygame.image.load("images/cloud.png")
+
+    title_screen(bg)
+    
     while True:
-        run_game()
+        run_game(bg,cloud_image)
         is_over()
 
 
-def run_game():
+def run_game(bg,cloud_image):
     HERO = pygame.Rect(WIDTH//3, HEIGHT-500, 50, 50)
     cloud_rect = pygame.Rect(WIDTH, 100, 92, 50)
-    cloud_image = pygame.image.load("images/cloud.png")
-    cloud_image = pygame.transform.scale(cloud_image, (184, 100)).convert_alpha(DISPLAY_SURFACE)
     bg_rect = pygame.Rect(0, -125, WIDTH, HEIGHT)
-    bg_image = pygame.image.load("images/city-bg.png")
-    bg_image = pygame.transform.scale(bg_image, (1600, 768))
     gravity = -12
     top_towers = []
     bottom_towers = []
@@ -69,13 +73,7 @@ def run_game():
             last_tower_passed = (last_tower_passed + 1) % len(top_towers)
             score += 1
 
-        draw_game_state(
-            cloud_rect, cloud_image, 
-            bg_rect, bg_image, 
-            top_towers, bottom_towers, 
-            HERO, 
-            score
-            )
+        draw_game_state(cloud_rect, bg_rect, top_towers, bottom_towers, HERO,bg,cloud_image, score)
         FPS_CLOCK.tick(FPS)
         pygame.display.flip()
 
@@ -125,8 +123,7 @@ def wait_for_key_pressed():
         pygame.display.update()
 
 
-def title_screen():
-    bg = pygame.image.load("images/city-bg.png")
+def title_screen(bg):
     bg = pygame.transform.scale(bg, (1600, 768))
     bg_rect = pygame.Rect(0, -125, WIDTH, HEIGHT)
 
@@ -178,14 +175,18 @@ def move_towers(top_towers, bottom_towers):
         top_towers[i].x -= 5
         bottom_towers[i].x -= 5
 
-        # If a pipe goes off-screen, move it to the right and randomize its height
         if top_towers[i].right < 0:
             x = max([pipe.right for pipe in top_towers]) + TOWER_GAP
             top_towers[i] = pygame.Rect(x, 0, TOWER_WIDTH, random.randint(100, 400))
             bottom_towers[i] = pygame.Rect(x, top_towers[i].height + TOWER_GAP, TOWER_WIDTH, HEIGHT - top_towers[i].height - TOWER_GAP)
 
-def draw_bg(cloud_rect, cloud_image, bg_rect, bg_image):
-    DISPLAY_SURFACE.blit(bg_image, bg_rect)
+def draw_bg(cloud_rect, bg_rect,bg,cloud_image):
+
+    cloud_image = pygame.transform.scale(cloud_image, (184, 100)).convert_alpha(DISPLAY_SURFACE)
+    bg = pygame.transform.scale(bg, (1600, 768))
+
+    DISPLAY_SURFACE.fill(SKY_COLOR)
+    DISPLAY_SURFACE.blit(bg, bg_rect)
     DISPLAY_SURFACE.blit(cloud_image, cloud_rect)
     
     cloud_rect.x -= 1
@@ -195,8 +196,8 @@ def draw_bg(cloud_rect, cloud_image, bg_rect, bg_image):
     if bg_rect.x <= -800:
         bg_rect.x = 0
 
-def draw_game_state(cloud_rect, cloud_image, bg_rect, bg_image, top_towers, bottom_towers, HERO, score):
-    draw_bg(cloud_rect, cloud_image, bg_rect, bg_image)
+def draw_game_state(cloud_rect, bg_rect, top_towers, bottom_towers, HERO,bg,cloud_image, score):
+    draw_bg(cloud_rect, bg_rect,bg,cloud_image)
     draw_towers(top_towers, bottom_towers)
     pygame.draw.rect(DISPLAY_SURFACE, (0, 255, 0), HERO)
     draw_score(score)
