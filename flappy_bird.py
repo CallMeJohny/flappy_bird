@@ -28,9 +28,9 @@ def main():
     FPS_CLOCK = pygame.time.Clock()
     BASICFONT = pygame.font.Font('freesansbold.ttf', 20)
     
-    bg = pygame.image.load(images/city-bg.png"))
+    bg = pygame.image.load("images/city-bg.png")
     bg = pygame.transform.scale(bg, (1600, 768))
-    cloud_image = pygame.image.load(images/cloud.png"))
+    cloud_image = pygame.image.load("images/cloud.png")
     cloud_image = pygame.transform.scale(cloud_image, (184, 100)).convert_alpha(DISPLAY_SURFACE)
 
     title_screen(bg) 
@@ -153,9 +153,9 @@ def title_screen(bg):
             counter = 0
         else:
             counter += 1
-        """DISPLAY_SURFACE.blit(bg, bg_rect)
+        DISPLAY_SURFACE.blit(bg, bg_rect)
         DISPLAY_SURFACE.blit(title_surface, title_rect)
-        DISPLAY_SURFACE.blit(msg_surface, msg_rect)"""
+        DISPLAY_SURFACE.blit(msg_surface, msg_rect)
         FPS_CLOCK.tick(FPS)
         pygame.display.update()
 
@@ -179,9 +179,9 @@ def move_towers(top_towers, bottom_towers):
         top_towers[i].x -= 5
         bottom_towers[i].x -= 5
 
-        # If a pipe goes off-screen, move it to the right and randomize its height
+        # If a tower goes off-screen, move it to the right and randomize its height
         if top_towers[i].right < 0:
-            x = max([pipe.right for pipe in top_towers]) + TOWER_GAP
+            x = max([tower.right for tower in top_towers]) + TOWER_GAP
             top_towers[i] = pygame.Rect(x, 0, TOWER_WIDTH, random.randint(100, 400))
             bottom_towers[i] = pygame.Rect(x, top_towers[i].height + TOWER_GAP, TOWER_WIDTH, HEIGHT - top_towers[i].height - TOWER_GAP)
 
@@ -198,8 +198,7 @@ def draw_bg(cloud_rect, bg_rect,bg,cloud_image, bg_speed=0):
         bg_rect.x = 0
 
 def draw_game_state(cloud_rect, bg_rect, top_towers, bottom_towers, HERO,bg,cloud_image, score, bg_speed=0):
-    # draw_bg(cloud_rect, bg_rect,bg,cloud_image, bg_speed)
-    DISPLAY_SURFACE.fill(SKY_COLOR)
+    draw_bg(cloud_rect, bg_rect,bg,cloud_image, bg_speed)
     draw_towers(top_towers, bottom_towers)
     pygame.draw.rect(DISPLAY_SURFACE, (0, 255, 0), HERO)
     draw_score(score)
